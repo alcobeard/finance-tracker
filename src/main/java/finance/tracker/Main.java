@@ -18,6 +18,25 @@ public class Main {
          *
          * Обратите внимание, что должно быть 4 строки
          */
-        System.out.println("Hello World!");
+        String[] menuItems = {
+                "Add transaction",
+                "List transactions",
+                "Exit"
+        };
+
+        printMenu("Welcome to Finance Tracker", menuItems);
+    }
+
+    public static void printMenu(String title, String[] items) {
+        System.out.println("================================");
+        System.out.println("     " + title);
+        System.out.println("================================");
+
+        for (int i = 0; i < items.length; i++) {
+            System.out.println("  " + (i + 1) + ". " + items[i]);
+        }
+
+        System.out.println("--------------------------------");
+        System.out.print("Choose an option: ");
     }
 }
