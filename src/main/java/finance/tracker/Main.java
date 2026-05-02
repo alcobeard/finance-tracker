@@ -18,6 +18,9 @@ public class Main {
          *
          * Обратите внимание, что должно быть 4 строки
          */
-        System.out.println("Hello World!");
+        System.out.println("Welcome to Finance Tracker");
+        System.out.println("1. Add transaction");
+        System.out.println("2. List transaction");
+        System.out.println("3. Exit");
     }
 }
