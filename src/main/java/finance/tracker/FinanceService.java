@@ -1,49 +1,126 @@
 package finance.tracker;
 
+import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * @author Aleksandr Bagdasarov
- * 2026-05
- */
-
 public class FinanceService {
     public static void main(String[] args) {
-        int balance = 0;
+        Scanner scanner = new Scanner(System.in);
+        List<HashMap<String, String>> transactions = new ArrayList<>();
+
         boolean running = true;
 
-        // Разобраться, что это за структура. Как она выглядит, для чего она и как с ней работать
-        List<HashMap<String, String>> transactions = new ArrayList<>();
-//      Давайте пока что остановимся на текущем формате хранения/входных данных
-//        {
-//            "id"       -> "1",
-//            "type"     -> "EXPENSE",
-//            "amount"   -> "500",
-//            "date"     -> "2026-04-29",
-//        }
-
-        /**
-         * Реализовать функионал финансового трекера с взаимодействием через консоль
-         *
-         * Функционал
-         * 1. Добавить доход/расход
-         * 2. Вывести список операций
-         * 3. Показать баланс
-         * 4. Удалить операцию по id
-         * 5. Выйти из программы
-         */
-        while (running) { // Наша программа должна работать, пока мы не захотим из нее выйти. Подумайте,
-            // как нам показывать меню до тех пор, пока не будет выбрано выйти из программы
+        while (running) {
             showMenu();
 
-        }
+            String command = scanner.nextLine();
 
+            if (command.equals("1")) {
+                System.out.println("Выберите тип операции");
+
+                System.out.println("1. Доход");
+
+                System.out.println("2. Расход");
+
+                System.out.println("3. Назад");
+
+                String typeCommand = scanner.nextLine();
+
+                if (typeCommand.equals("1")) {
+                    System.out.println("Доход");
+
+                    System.out.println("Введите категорию");
+                    String category = scanner.nextLine();
+
+                    System.out.println("Введите сумму");
+                    String amount = scanner.nextLine();
+
+                    System.out.println("Введите дату");
+                    String date = scanner.nextLine();
+
+                    HashMap<String, String> transaction = new HashMap<>();
+
+                    transaction.put("Тип", "Доход");
+                    transaction.put("Категория", category);
+                    transaction.put("Сумма", amount);
+                    transaction.put("Дата", date);
+
+                    transactions.add(transaction);
+
+                    System.out.println("Доход сохранён");
+
+                }
+                if (typeCommand.equals("2")) {
+                    System.out.println("Расход");
+
+                    System.out.println("Категория");
+                    String category = scanner.nextLine();
+
+                    System.out.println("Сумма");
+                    String amount = scanner.nextLine();
+
+                    System.out.println("Дата");
+                    String date = scanner.nextLine();
+
+                    HashMap<String, String> transaction = new HashMap<>();
+                    transaction.put("Тип", "Расход");
+                    transaction.put("Категория", category);
+                    transaction.put("Сумма", amount);
+                    transaction.put("Дата", date);
+
+                    transactions.add(transaction);
+
+                    System.out.println("Расход сохранён");
+                }
+                if (typeCommand.equals("3")) {
+                    System.out.println("Возврат в главное меню");
+                }
+
+            }
+            if (command.equals("2")) {
+                if (transactions.isEmpty()) {
+                    System.out.println("Пусто");
+                } else {
+                    for (HashMap<String, String> transaction : transactions) {
+                        System.out.println("Тип: " + transaction.get("Тип"));
+                        System.out.println("Категория: " + transaction.get("Категория"));
+                        System.out.println("Сумма: " + transaction.get("Сумма"));
+                        System.out.println("Дата: " + transaction.get("Дата"));
+                    }
+                }
+            }
+            if (command.equals("3")) {
+                int balance = 0;
+
+                for (HashMap<String, String> transaction : transactions) {
+                    int amountValue = Integer.parseInt(transaction.get("Сумма"));
+
+                    if (transaction.get("Тип").equals("Доход")) {
+                        balance = balance + amountValue;
+                    }
+
+                    if (transaction.get("Тип").equals("Расход")) {
+                        balance = balance - amountValue;
+                    }
+                }
+
+                System.out.println("Баланс: " + balance);
+            }
+            if (command.equals("5")) {
+                running = false;
+                System.out.println("Выход из программы");
+            }
+        }
     }
 
-    // Давайте выведим демонстрацию меню в отдельную функцию для удобства.
     public static void showMenu() {
-
+        System.out.println("Welcome to Finance Tracker");
+        System.out.println("1. Add transaction");
+        System.out.println("2. List transaction");
+        System.out.println("3. Show balance");
+        System.out.println("4. Delete transaction by id");
+        System.out.println("5. Exit");
     }
 }
