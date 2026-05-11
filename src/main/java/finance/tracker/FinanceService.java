@@ -9,6 +9,7 @@ public class FinanceService {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         List<HashMap<String, String>> transactions = new ArrayList<>();
+        int balanceCommon = 0;
 
         boolean running = true;
 
@@ -42,6 +43,7 @@ public class FinanceService {
 
                     HashMap<String, String> transaction = new HashMap<>();
 
+                    transaction.put("id", String.valueOf(transactions.size()));
                     transaction.put("Тип", "Доход");
                     transaction.put("Категория", category);
                     transaction.put("Сумма", amount);
@@ -65,6 +67,7 @@ public class FinanceService {
                     String date = scanner.nextLine();
 
                     HashMap<String, String> transaction = new HashMap<>();
+                    transaction.put("id", String.valueOf(transactions.size()));
                     transaction.put("Тип", "Расход");
                     transaction.put("Категория", category);
                     transaction.put("Сумма", amount);
@@ -84,6 +87,7 @@ public class FinanceService {
                     System.out.println("Пусто");
                 } else {
                     for (HashMap<String, String> transaction : transactions) {
+                        System.out.println("id: " + transaction.get("id"));
                         System.out.println("Тип: " + transaction.get("Тип"));
                         System.out.println("Категория: " + transaction.get("Категория"));
                         System.out.println("Сумма: " + transaction.get("Сумма"));
@@ -107,6 +111,19 @@ public class FinanceService {
                 }
 
                 System.out.println("Баланс: " + balance);
+            }
+            if (command.equals("4")) {
+                System.out.println("Введите id транзакции");
+                String id = scanner.nextLine();
+
+                for (int i = 0; i < transactions.size(); i++) {
+                    HashMap<String, String> transaction = transactions.get(i);
+                    if (transaction.get("id").equals(id)) {
+                        transactions.remove(i);
+                        break;
+                    }
+                }
+
             }
             if (command.equals("5")) {
                 running = false;
