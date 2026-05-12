@@ -22,13 +22,13 @@ public class FinanceService {
             DateTimeFormatter.ofPattern("yyyy/MM/dd"),
             DateTimeFormatter.ofPattern("dd.MM.yyyy")
     );
+    static Scanner scanner = new Scanner(System.in);
     static int balance = 0;
-
 
     public static void main(String[] args) {
 
         boolean running = true;
-        Scanner scanner = new Scanner(System.in);
+
 
 //      Давайте пока что остановимся на текущем формате хранения/входных данных
 //        {
@@ -48,13 +48,13 @@ public class FinanceService {
          * 4. Удалить операцию по id
          * 5. Выйти из программы
          */
-        while (true) { // Наша программа должна работать, пока мы не захотим из нее выйти. Подумайте,
+        while (running) { // Наша программа должна работать, пока мы не захотим из нее выйти. Подумайте,
             // как нам показывать меню до тех пор, пока не будет выбрано выйти из программы
             showMenu();
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    addTranscation();
+                    addTransaction();
                     break;
                 case "2":
                     listTransactions();
@@ -63,9 +63,10 @@ public class FinanceService {
                     showBalance();
                     break;
                 case "4":
-                    deleteTransactions();
+                    deleteTransaction();
                     break;
                 case "5":
+                    running = false;
                     return;
                 default:
                     System.out.println("Invalid choice");
@@ -74,13 +75,12 @@ public class FinanceService {
 
     }
 
-    private static void deleteTransactions() {
+    private static void deleteTransaction() {
         listTransactions();
-        Scanner scanner = new Scanner(System.in);
         System.out.print("Enter transaction ID to be deleted: ");
         String id = scanner.nextLine();
         for  (int i = 0; i < transactions.size(); i++) {
-            if (transactions.get(i).get(id).equals(id)) {
+            if (transactions.get(i).get("id").equals(id)) {
                 int amount = Integer.parseInt(transactions.get(i).get("amount"));
                 String type = transactions.get(i).get("type");
                 balance += (type.equals("income")) ? amount * (-1) : amount;
@@ -98,9 +98,9 @@ public class FinanceService {
         System.out.println("Balance: " + balance);
     }
 
-    private static void addTranscation() {
-        Scanner scanner = new Scanner(System.in);
+    private static void addTransaction() {
         HashMap<String, String> transaction = new HashMap<>();
+        int tmpBalance = 0;
         int id = transactions.size() + 1;
 
         transaction.put("id", String.valueOf(id));
@@ -110,11 +110,12 @@ public class FinanceService {
         transaction.put("amount", amount);
         boolean validTransaction = false;
         while (!validTransaction) {
-            System.out.print("Enter type of transaction - 1. income / 2. expense: ");
+            System.out.print("Enter type of transaction - 1. income / 2. expense / 0. exit: ");
             String type = scanner.nextLine();
             switch (type) {
-                case "1": balance = balance + Integer.parseInt(amount); transaction.put("type", "income"); validTransaction = true; break;
-                case "2": balance = balance - Integer.parseInt(amount); transaction.put("type", "expense"); validTransaction = true; break;
+                case "0": return;
+                case "1": tmpBalance = Integer.parseInt(amount); transaction.put("type", "income"); validTransaction = true; break;
+                case "2": tmpBalance = (-1) * Integer.parseInt(amount); transaction.put("type", "expense"); validTransaction = true; break;
                 default: System.out.println("Invalid type");
             }
         }
@@ -122,8 +123,9 @@ public class FinanceService {
         boolean validDate = false;
 
         while (!validDate) {
-            System.out.print("Enter date of transaction: ");
+            System.out.print("Enter date of transaction (enter 0 to exit): ");
             String dateInput = scanner.nextLine();
+            if (dateInput.equals("0")) return;
             LocalDate date;
             try {
                 date = parseDate(dateInput);
@@ -135,6 +137,7 @@ public class FinanceService {
         }
 
         transactions.add(transaction);
+        balance += tmpBalance;
         printTransaction(transaction);
     }
 
