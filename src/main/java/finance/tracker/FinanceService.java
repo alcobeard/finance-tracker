@@ -10,6 +10,7 @@ import java.util.Scanner;
  */
 
 public class FinanceService {
+    static int prices = 0;
     public static void main(String[] args) {
         ArrayList<Transaction> transactions = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
@@ -118,7 +119,7 @@ public class FinanceService {
                             String isoDate = parts[2] + "-" + parts[1] + "-" + parts[0];
 
                             try {
-                                date = LocalDate.parse(isoDate);  // ← присваиваем объект LocalDate
+                                date = LocalDate.parse(isoDate);
                                 break;
                             } catch (DateTimeParseException e) {
                                 System.out.println("------------------------------------------");
@@ -128,6 +129,12 @@ public class FinanceService {
                         } else {
                             System.out.println("Ошибка! Используйте формат дд-мм-гггг или дд.мм.гггг");
                         }
+                    }
+                    if (type.equals("доход")) {
+                        prices = prices + amount;
+                    }
+                    else {
+                        prices = prices - amount;
                     }
                     int Id = transactions.size() + 1;
                     finance.tracker.Transaction newTransaction = new finance.tracker.Transaction(Id, type, amount, date);
@@ -166,21 +173,13 @@ public class FinanceService {
         System.out.println("------------------------------------------");
         System.out.println("===  Трекер бюджета | Рассчёт прибыли  ===");
         System.out.println("------------------------------------------");
-        int prices = 0;
         if (transactions.isEmpty()) {                          // transactions.size = 0 не работает
             System.out.println("------------------------------------------");
             System.out.println("Список операций пуст!");
             System.out.println("------------------------------------------");
         } else {
-            for (int i = 0; i < transactions.size(); i++) {
-                if (transactions.get(i).type.equals("доход")) {                        // (transactions.get(i).get("type") == "доход" не работает
-                    prices = transactions.get(i).amount + prices;
-                } else {
-                    prices = prices - transactions.get(i).amount;
-                }
-            }
             System.out.println("Ваша прибыль составляет: " + prices);
-        }
+                }
     }
     public static void removeTransaction (Scanner scanner, ArrayList<finance.tracker.Transaction> transactions){
         System.out.println("------------------------------------------");
