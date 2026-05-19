@@ -187,7 +187,17 @@ public class FinanceService {
         String input = scanner.nextLine();
         boolean found = false;
         for (int i = 0; i < transactions.size(); i++) {                   //долго ломал голову, не знал, что if без else работает
-            if (String.valueOf(transactions.get(i).id).equals(input)) {
+            if (String.valueOf(transactions.get(i).id).equals(input) && transactions.get(i).type.equals("доход")) {
+                prices = prices - transactions.get(i).amount;
+                transactions.remove(i);
+                found = true;
+                System.out.println("------------------------------------------");
+                System.out.println("Операция с ID: " + input +" удалена!");
+                System.out.println("------------------------------------------");
+                break;
+            }
+            if (String.valueOf(transactions.get(i).id).equals(input) && transactions.get(i).type.equals("расход")) {
+                prices = prices + transactions.get(i).amount;
                 transactions.remove(i);
                 found = true;
                 System.out.println("------------------------------------------");
