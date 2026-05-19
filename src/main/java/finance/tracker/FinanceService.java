@@ -79,11 +79,11 @@ public class FinanceService {
         listTransactions();
         System.out.print("Enter transaction ID to be deleted: ");
         String id = scanner.nextLine();
-        for  (int i = 0; i < transactions.size(); i++) {
-            if (transactions.get(i).get("id").equals(id)) {
-                int amount = Integer.parseInt(transactions.get(i).get("amount"));
-                String type = transactions.get(i).get("type");
-                balance += (type.equals("income")) ? amount * (-1) : amount;
+        for  (int i = 0; i < transactions.size(); i++) { // иттерируемся по списку мап (мапа = транзакция)
+            if (transactions.get(i).get("id").equals(id)) { // находим нужную транзакцию
+                int amount = Integer.parseInt(transactions.get(i).get("amount")); // находим в транзакции сумму
+                String type = transactions.get(i).get("type"); // тип операции
+                balance += (type.equals("income")) ? amount * (-1) : amount;  // (условие) ? if yes : if no;
                 transactions.remove(i);
                 System.out.println(id + " transaction has been deleted");
                 break;
