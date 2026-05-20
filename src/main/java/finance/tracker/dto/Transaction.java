@@ -1,4 +1,4 @@
-package finance.tracker;
+package finance.tracker.dto;
 
 import java.time.LocalDate;
 

@@ -1,4 +1,6 @@
 package finance.tracker;
+import finance.tracker.dto.Transaction;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -69,7 +71,7 @@ public class FinanceService {
         System.out.println("------------------------------------------");
         System.out.print("Пункт меню № ");
     }
-    public static void transactionAdd(Scanner scanner, ArrayList<finance.tracker.Transaction> transactions) {
+    public static void transactionAdd(Scanner scanner, ArrayList<Transaction> transactions) {
         while (true) {
             try {
                 System.out.println("------------------------------------------");
@@ -137,7 +139,7 @@ public class FinanceService {
                         prices = prices - amount;
                     }
                     int Id = transactions.size() + 1;
-                    finance.tracker.Transaction newTransaction = new finance.tracker.Transaction(Id, type, amount, date);
+                    Transaction newTransaction = new Transaction(Id, type, amount, date);
                     transactions.add(newTransaction);
                     System.out.println("------------------------------------------");
                     System.out.println("       Транзакция успешно добавлена!      ");
@@ -154,7 +156,7 @@ public class FinanceService {
             }
         }
     }
-    public static void showTransactions (ArrayList<finance.tracker.Transaction> transactions) {
+    public static void showTransactions (ArrayList<Transaction> transactions) {
         if (transactions.isEmpty()) {
             System.out.println("------------------------------------------");
             System.out.println("Список операций пуст!");
@@ -169,7 +171,7 @@ public class FinanceService {
             }
         }
     }
-    public static void showBalance (ArrayList<finance.tracker.Transaction> transactions) {
+    public static void showBalance (ArrayList<Transaction> transactions) {
         System.out.println("------------------------------------------");
         System.out.println("===  Трекер бюджета | Рассчёт прибыли  ===");
         System.out.println("------------------------------------------");
@@ -181,7 +183,7 @@ public class FinanceService {
             System.out.println("Ваша прибыль составляет: " + prices);
                 }
     }
-    public static void removeTransaction (Scanner scanner, ArrayList<finance.tracker.Transaction> transactions){
+    public static void removeTransaction (Scanner scanner, ArrayList<Transaction> transactions){
         System.out.println("------------------------------------------");
         System.out.print("Введите ID операции: ");
         String input = scanner.nextLine();
