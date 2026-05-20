@@ -6,10 +6,10 @@ package finance.tracker.dto;
  */
 
 public enum Category {
-    зарплата,
-    еда,
-    транспорт,
-    развлечения,
-    здоровье,
-    другое
+    SALARY,
+    FOOD,
+    TRANSPORT,
+    ENTERTAINMENT,
+    HEALTH,
+    OTHER
 }
