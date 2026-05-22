@@ -176,6 +176,7 @@ public class FinanceService {
         if (transactions.isEmpty()) {                          // transactions.size = 0 не работает
             System.out.println("------------------------------------------");
             System.out.println("Список операций пуст!");
+            System.out.println("Ваша прибыль составляет: 0");
             System.out.println("------------------------------------------");
         } else {
             System.out.println("Ваша прибыль составляет: " + prices);
