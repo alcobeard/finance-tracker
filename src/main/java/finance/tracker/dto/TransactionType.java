@@ -6,6 +6,7 @@ package finance.tracker.dto;
  */
 
 public enum TransactionType {
-    INCOME,
-    EXPENSE
+    доход,
+    расход
+
 }
