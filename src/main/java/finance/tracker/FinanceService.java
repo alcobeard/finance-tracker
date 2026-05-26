@@ -210,8 +210,8 @@ public class FinanceService {
         String choice =  scanner.nextLine();
         switch (choice) {
             case "1" -> showAllTransactions(transactions);
-            case "2" -> showIncome(transactions);
-            case "3" -> showExpense(transactions);
+            case "2" -> showByType(transactions, TransactionType.доход);
+            case "3" -> showByType(transactions, TransactionType.расход);
             case "4" -> filterByCategory(scanner, transactions);
             case "5" -> {
                 return;
@@ -232,13 +232,14 @@ public class FinanceService {
             System.out.println("--------------------------------------------------------");
             System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", "ID", "Сумма", "Тип", "Дата", "Категория");
             System.out.println("|------|-----------|--------|------------|-------------|");
-            for (int i = 0; i < transactions.size(); i++) {
-                System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", transactions.get(i).getId(), transactions.get(i).getAmount(), transactions.get(i).getType(), transactions.get(i).getDate(), transactions.get(i).getCategory());
+            for (Transaction transaction : transactions) {
+                System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", transaction.getId(), transaction.getAmount(), transaction.getType(), transaction.getDate(), transaction.getCategory());
                 System.out.println("|------|-----------|--------|------------|-------------|");
             }
         }
     }
-    public static void showIncome (ArrayList<Transaction> transactions) {
+
+    public static void showByType (ArrayList<Transaction> transactions, TransactionType type) {
         if (transactions.isEmpty()) {
             System.out.println("--------------------------------------------------------");
             System.out.println("Список операций пуст!");
@@ -247,31 +248,15 @@ public class FinanceService {
             System.out.println("--------------------------------------------------------");
             System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", "ID", "Сумма", "Тип", "Дата", "Категория");
             System.out.println("|------|-----------|--------|------------|-------------|");
-            for (int i = 0; i < transactions.size(); i++) {
-                if (transactions.get(i).getType() == TransactionType.доход) {
-                    System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", transactions.get(i).getId(), transactions.get(i).getAmount(), transactions.get(i).getType(), transactions.get(i).getDate(), transactions.get(i).getCategory());
+            for (Transaction transaction : transactions) {
+                if (transaction.getType() == type) {
+                    System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", transaction.getId(), transaction.getAmount(), transaction.getType(), transaction.getDate(), transaction.getCategory());
                     System.out.println("|------|-----------|--------|------------|-------------|");
                 }
             }
         }
     }
-    public static void showExpense (ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("--------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("--------------------------------------------------------");
-        } else {
-            System.out.println("--------------------------------------------------------");
-            System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", "ID", "Сумма", "Тип", "Дата", "Категория");
-            System.out.println("|------|-----------|--------|------------|-------------|");
-            for (int i = 0; i < transactions.size(); i++) {
-                if (transactions.get(i).getType() == TransactionType.расход) {
-                    System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", transactions.get(i).getId(), transactions.get(i).getAmount(), transactions.get(i).getType(), transactions.get(i).getDate(), transactions.get(i).getCategory());
-                    System.out.println("|------|-----------|--------|------------|-------------|");
-                }
-            }
-        }
-    }
+
     public static void showBalance (ArrayList<Transaction> transactions) {
         System.out.println("--------------------------------------------------------");
         System.out.println("======      Трекер бюджета | Рассчёт прибыли      ======");
