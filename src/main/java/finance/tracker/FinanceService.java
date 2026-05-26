@@ -1,75 +1,29 @@
 package finance.tracker;
 
-import finance.tracker.dto.Category;
-import finance.tracker.dto.Transaction;
-import finance.tracker.dto.TransactionType;
+import finance.tracker.dto.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+
 public class FinanceService { // это класс
+    private static double balanceCommon = 0;
+    private static List<Transaction> transactions = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+    private static int nextId = 1; // транзакция получает свой id
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        List<Transaction> transactions = new ArrayList<>(); //позволяет хранить объекты в Transaction
-        int nextId = 1; // транзакция получает свой id
+         //позволяет хранить объекты в Transaction
         boolean running = true;
         while (running) {
-            System.out.println("Текущий баланс: " + calculateBalance(transactions)); // баланс показывается сразу и считается по транзакциям
+            System.out.println("Текущий баланс: " + balanceCommon); // баланс показывается сразу и считается по транзакциям
             showMenu(); // показывает меню при запуске (смотри скобки, чтобы метод работал надо чтобы класс не закрылся)
             String command = scanner.nextLine();
             switch (command) {
                 case "1": {
-                    System.out.println("Выберите тип операции");
-                    System.out.println("1. Доход");
-                    System.out.println("2. Расход");
-                    System.out.println("3. Назад");
-                    String typeCommand = scanner.nextLine();
-                    switch (typeCommand) {
-                        case "1": {
-                            System.out.println("Доход");
-                            System.out.println("Введите сумму");
-                            double amount = Double.parseDouble(scanner.nextLine());
-                            Category category = readCategory(scanner);
-                            Transaction transaction = new Transaction( //транзакция как объект
-                                    nextId,
-                                    amount,
-                                    LocalDateTime.now(),
-                                    TransactionType.INCOME, //enum для типа операции
-                                    category
-                            );
-                            transactions.add(transaction);
-                            nextId++; //увеличивает id следующей транзакции
-                            System.out.println("Доход сохранён");
-                            break;
-                        }
-                        case "2": {
-                            System.out.println("Расход");
-                            System.out.println("Введите сумму");
-                            double amount = Double.parseDouble(scanner.nextLine());
-
-                            Category category = readCategory(scanner);
-
-                            Transaction transaction = new Transaction(
-                                    nextId,
-                                    amount,
-                                    LocalDateTime.now(),
-                                    TransactionType.EXPENSE, //enum для типа операции
-                                    category
-                            );
-                            transactions.add(transaction);
-                            nextId++;
-                            System.out.println("Расход сохранён");
-                            break;
-                        }
-                        case "3": {
-                            System.out.println("Возврат в главное меню");
-                            break;
-                        }
-                        default: {
-                            System.out.println("Неизвестный тип операции");
-                            break;
-                        }
-                    }
+                    addTrancastion();
                     break;
                 }
                 case "2": {
@@ -92,22 +46,7 @@ public class FinanceService { // это класс
                     break;
                 }
                 case "4": {
-                    System.out.println("Введите id транзакции");
-                    int id = Integer.parseInt(scanner.nextLine());
-                    boolean found = false;
-                    for (int i = 0; i < transactions.size(); i++) {
-                        Transaction transaction = transactions.get(i);
-
-                        if (transaction.getId() == id) {
-                            transactions.remove(i);
-                            found = true;
-                            System.out.println("Транзакция удалена");
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        System.out.println("Транзакция с таким id не найдена");
-                    }
+                    deleteTransaction();
                     break;
                 }
                 case "5": {
@@ -122,7 +61,84 @@ public class FinanceService { // это класс
             }
         }
     }
-        public static double calculateBalance(List<Transaction> transactions) { // метод баланса, тут он считается
+
+    private static void deleteTransaction() {
+        System.out.println("Введите id транзакции");
+        int id = Integer.parseInt(scanner.nextLine());
+        boolean found = false;
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction transaction = transactions.get(i);
+
+            if (transaction.getId() == id) {
+                transactions.remove(i);
+                // ВОТ ТУТ БЛЯТЬ ТОЖЕ ОБНОВИТЬ БАЛАНС И ПРОВЕРИТЬ КАКАЯ СУКА ОПЕРАЦИЯ БЫЛА
+                // И ИСХОДЯ ИЗ ЭТОГО УВЕЛИЧИТЬ БАЛАНС ИЛИ УМЕНЬШИТЬ
+                found = true;
+                System.out.println("Транзакция удалена");
+                break;
+            }
+        }
+        if (!found) {
+            System.out.println("Транзакция с таким id не найдена");
+        }
+    }
+
+    private static void addTrancastion() {
+        System.out.println("Выберите тип операции");
+        System.out.println("1. Доход");
+        System.out.println("2. Расход");
+        System.out.println("3. Назад");
+        String typeCommand = scanner.nextLine();
+        switch (typeCommand) {
+            case "1": {
+                System.out.println("Доход");
+                System.out.println("Введите сумму");
+                double amount = Double.parseDouble(scanner.nextLine());
+                Category category = readCategory(scanner);
+                Transaction transaction = new Transaction( //транзакция как объект
+                        nextId,
+                        amount,
+                        LocalDateTime.now(),
+                        TransactionType.INCOME, //enum для типа операции
+                        category
+                );
+                transactions.add(transaction);
+                nextId++; //увеличивает id следующей транзакции
+                System.out.println("Доход сохранён");
+                // ВОТ ЗДЕСЬ ОБНОВИ БАЛАНС! НЕ ЗАБУДЬ ПРО ЗНАКИ +/-
+                break;
+            }
+            case "2": {
+                System.out.println("Расход");
+                System.out.println("Введите сумму");
+                double amount = Double.parseDouble(scanner.nextLine());
+
+                Category category = readCategory(scanner);
+
+                Transaction transaction = new Transaction(
+                        nextId,
+                        amount,
+                        LocalDateTime.now(),
+                        TransactionType.EXPENSE, //enum для типа операции
+                        category
+                );
+                transactions.add(transaction);
+                nextId++;
+                System.out.println("Расход сохранён");
+                break;
+            }
+            case "3": {
+                System.out.println("Возврат в главное меню");
+                break;
+            }
+            default: {
+                System.out.println("Неизвестный тип операции");
+                break;
+            }
+        }
+    }
+
+    public static double calculateBalance(List<Transaction> transactions) { // метод баланса, тут он считается
             double balance = 0;
             for (Transaction transaction : transactions) {
                 if (transaction.getType() == TransactionType.INCOME) {
@@ -151,22 +167,17 @@ public class FinanceService { // это класс
             System.out.println("5. Здоровье");
             System.out.println("6. Прочее");
             String categoryCommand = scanner.nextLine();
-            switch (categoryCommand) { // enum для категорий
-                case "1":
-                    return Category.SALARY;
-                case "2":
-                    return Category.FOOD;
-                case "3":
-                    return Category.TRANSPORT;
-                case "4":
-                    return Category.ENTERTAINMENT;
-                case "5":
-                    return Category.HEALTH;
-                case "6":
-                    return Category.OTHER;
-                default:
+            return switch (categoryCommand) { // enum для категорий
+                case "1" -> Category.SALARY;
+                case "2" -> Category.FOOD;
+                case "3" -> Category.TRANSPORT;
+                case "4" -> Category.ENTERTAINMENT;
+                case "5" -> Category.HEALTH;
+                case "6" -> Category.OTHER;
+                default -> {
                     System.out.println("Неизвестная категория, выбрана Прочее");
-                    return Category.OTHER;
-            }
+                    yield Category.OTHER;
+                }
+            };
         }
-        }
+    }
