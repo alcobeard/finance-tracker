@@ -85,6 +85,8 @@ public class FinanceService {
      * <p>
      * 1.   Принимает и форматирует дату            inputDate
      * 2.   Вывод таблицы                           printTransactionsTable
+     * 3.   Выбрать категорию                       choiceCategory
+     * 4.   Проверить таблицу на пустоту            checkEmpty
      * <p>
      * Добавить:
      * Подумать над выходом из вопросов.
@@ -138,38 +140,9 @@ public class FinanceService {
                         }
                         break;
                     }
-                    Category category = Category.еда;
-                    while (true) {
-                        System.out.println("--------------------------------------------------------");
-                        System.out.println("Выберите категорию:");
-                        System.out.println("--------------------------------------------------------");
-                        System.out.println("1. Зарплата");
-                        System.out.println("2. Еда");
-                        System.out.println("3. Транспорт");
-                        System.out.println("4. Развлечения");
-                        System.out.println("5. Здоровье");
-                        System.out.println("6. Другое");
-                        System.out.println("7. Вернуться в меню");
-                        System.out.println("--------------------------------------------------------");
-                        System.out.print("Ваш выбор № ");
-                        String choice = scanner.nextLine();
-                        switch (choice) {
-                            case "1" -> category = Category.зарплата;
-                            case "2" -> category = Category.еда;
-                            case "3" -> category = Category.транспорт;
-                            case "4" -> category = Category.развлечения;
-                            case "5" -> category = Category.здоровье;
-                            case "6" -> category = Category.другое;
-                            case "7" -> {
-                                return;
-                            }
-                            default -> {
-                                System.out.println("--------------------------------------------------------");
-                                System.out.println("Выберете пункт из списка!");
-                                System.out.println("--------------------------------------------------------");
-                            }
-                        }
-                        break;
+                    Category category = choiceCategory(scanner);
+                    if (category == null) {
+                        return;
                     }
                     /**
                      Здесь используется метод inputDate, его задача принимать дату и форматировать её в iso формат
@@ -285,37 +258,27 @@ public class FinanceService {
     }
 
     public static void showIncome(ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("--------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("--------------------------------------------------------");
-        } else {
-            System.out.println("--------------------------------------------------------");
-            System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", "ID", "Сумма", "Тип", "Дата", "Категория");
-            System.out.println("|------|-----------|--------|------------|-------------|");
-            for (int i = 0; i < transactions.size(); i++) {
-                if (transactions.get(i).getType() == TransactionType.доход) {
+        checkEmpty(transactions);
+        System.out.println("--------------------------------------------------------");
+        System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", "ID", "Сумма", "Тип", "Дата", "Категория");
+        System.out.println("|------|-----------|--------|------------|-------------|");
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i).getType() == TransactionType.доход) {
                     System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", transactions.get(i).getId(), transactions.get(i).getAmount(), transactions.get(i).getType(), transactions.get(i).getDate(), transactions.get(i).getCategory());
                     System.out.println("|------|-----------|--------|------------|-------------|");
-                }
             }
         }
     }
 
     public static void showExpense(ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("--------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("--------------------------------------------------------");
-        } else {
-            System.out.println("--------------------------------------------------------");
-            System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", "ID", "Сумма", "Тип", "Дата", "Категория");
-            System.out.println("|------|-----------|--------|------------|-------------|");
-            for (int i = 0; i < transactions.size(); i++) {
-                if (transactions.get(i).getType() == TransactionType.расход) {
+        checkEmpty(transactions);
+        System.out.println("--------------------------------------------------------");
+        System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", "ID", "Сумма", "Тип", "Дата", "Категория");
+        System.out.println("|------|-----------|--------|------------|-------------|");
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i).getType() == TransactionType.расход) {
                     System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", transactions.get(i).getId(), transactions.get(i).getAmount(), transactions.get(i).getType(), transactions.get(i).getDate(), transactions.get(i).getCategory());
                     System.out.println("|------|-----------|--------|------------|-------------|");
-                }
             }
         }
     }
@@ -394,19 +357,14 @@ public class FinanceService {
     }
 
     public static void showByCategory(ArrayList<Transaction> transactions, Category category) {
-        if (transactions.isEmpty()) {
-            System.out.println("--------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("--------------------------------------------------------");
-        } else {
-            System.out.println("--------------------------------------------------------");
-            System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", "ID", "Сумма", "Тип", "Дата", "Категория");
-            System.out.println("|------|-----------|--------|------------|-------------|");
-            for (int i = 0; i < transactions.size(); i++) {
-                if (transactions.get(i).getCategory() == category) {
+        checkEmpty(transactions);
+        System.out.println("--------------------------------------------------------");
+        System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", "ID", "Сумма", "Тип", "Дата", "Категория");
+        System.out.println("|------|-----------|--------|------------|-------------|");
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i).getCategory() == category) {
                     System.out.printf("| %-4s | %-9s | %-6s | %-10s | %-11s | %n", transactions.get(i).getId(), transactions.get(i).getAmount(), transactions.get(i).getType(), transactions.get(i).getDate(), transactions.get(i).getCategory());
                     System.out.println("|------|-----------|--------|------------|-------------|");
-                }
             }
         }
     }
@@ -442,12 +400,7 @@ public class FinanceService {
     }
 
     public static void showTransactionsByDate(Scanner scanner, ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("-------------------------------------------------------------------------------");
-            return;
-        }
+        checkEmpty(transactions);
         LocalDate date = inputDate(scanner);
         boolean found = false;
         boolean printHeader = false;
@@ -478,12 +431,7 @@ public class FinanceService {
     }
 
     public static void showTransactionsByDateRange(Scanner scanner, ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("-------------------------------------------------------------------------------");
-            return;
-        }
+        checkEmpty(transactions);
         LocalDate startDate = null;
         LocalDate endDate = null;
         System.out.println("Введите дату начала поиска!");
@@ -539,6 +487,11 @@ public class FinanceService {
             LocalDate randomDate = LocalDate.now().plusDays(randomDays);
             Category randomCategory = categories[ThreadLocalRandom.current().nextInt(categories.length)];
             Transaction transaction = new Transaction(i, randomType, randomAmount, randomDate, randomCategory, discription);
+            if (randomType == TransactionType.доход) {
+                prices = prices + randomAmount;
+            } else {
+                prices = prices - randomAmount;
+            }
             newList.add(transaction);
         }
         return newList;
@@ -584,13 +537,7 @@ public class FinanceService {
     }
 
     public static void sortTransactionsByDate (Scanner scanner, ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("-------------------------------------------------------------------------------");
-            return;
-        }
-        else {
+        checkEmpty(transactions);
             System.out.println("1. Отсортировать по возрастанию");
             System.out.println("2. Отсортировать по убыванию");
             System.out.println("3. Вернуться в главное меню");
@@ -609,7 +556,6 @@ public class FinanceService {
                 }
             }
             printTransactionsTable(transactions);
-        }
     }
 
     public static void printTransactionsTable (ArrayList<Transaction> transactions) {
@@ -633,17 +579,11 @@ public class FinanceService {
     }
 
     public static void sortTransactionsByAmount (Scanner scanner, ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("-------------------------------------------------------------------------------");
-            return;
-        }
-        else {
-            System.out.println("1. Отсортировать по возрастанию");
-            System.out.println("2. Отсортировать по убыванию");
-            System.out.println("3. Вернуться в главное меню");
-            String choice = scanner.nextLine();
+        checkEmpty(transactions);
+        System.out.println("1. Отсортировать по возрастанию");
+        System.out.println("2. Отсортировать по убыванию");
+        System.out.println("3. Вернуться в главное меню");
+        String choice = scanner.nextLine();
             switch (choice) {
                 case "1" -> transactions.sort(Comparator.comparing(Transaction::getAmount));
                 case "2" -> transactions.sort(Comparator.comparing(Transaction::getAmount).reversed());
@@ -659,15 +599,9 @@ public class FinanceService {
             }
             printTransactionsTable(transactions);
         }
-    }
 
     public static void showExpensesByCategory (Scanner scanner, ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("-------------------------------------------------------------------------------");
-            return;
-        }
+        checkEmpty(transactions);
         while (true) {
             printCategoriesMenu();
             String choice = scanner.nextLine();
@@ -803,12 +737,7 @@ public class FinanceService {
     }
 
     public static void showMaxExpense (ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("-------------------------------------------------------------------------------");
-            return;
-        }
+        checkEmpty(transactions);
         int maxExpense = 0;
         boolean found = false;
         for (int i = 0; i < transactions.size(); i++) {
@@ -841,12 +770,7 @@ public class FinanceService {
     }
 
     public static void showExpensesByMonth (Scanner scanner, ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("-------------------------------------------------------------------------------");
-            return;
-        }
+        checkEmpty(transactions);
         System.out.print("Введите месяц от 1-12: ");
         int month = scanner.nextInt();
         scanner.nextLine();
@@ -882,12 +806,7 @@ public class FinanceService {
     }
 
     public static void showAvgExpenses (ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("-------------------------------------------------------------------------------");
-            return;
-        }
+        checkEmpty(transactions);
         int sum = 0;
         int count = 0;
         for (int i = 0; i < transactions.size(); i++) {
@@ -903,12 +822,7 @@ public class FinanceService {
     }
 
     public static void showUniqueCategories (ArrayList<Transaction> transactions) {
-        if (transactions.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("Список операций пуст!");
-            System.out.println("-------------------------------------------------------------------------------");
-            return;
-        }
+        checkEmpty(transactions);
         HashSet <Category> uniqueCategories = new HashSet<>();
         for (int i = 0; i < transactions.size(); i++){
             uniqueCategories.add(transactions.get(i).getCategory());
@@ -916,5 +830,60 @@ public class FinanceService {
         System.out.println("-------------------------------------------------------------------------------");
         System.out.println("Список уникальных категорий: " + uniqueCategories);
         System.out.println("-------------------------------------------------------------------------------");
+    }
+
+    public static Category choiceCategory (Scanner scanner) {
+        while (true) {
+            System.out.println("--------------------------------------------------------");
+            System.out.println("Выберите категорию:");
+            System.out.println("--------------------------------------------------------");
+            System.out.println("1. Зарплата");
+            System.out.println("2. Еда");
+            System.out.println("3. Транспорт");
+            System.out.println("4. Развлечения");
+            System.out.println("5. Здоровье");
+            System.out.println("6. Другое");
+            System.out.println("7. Вернуться в меню");
+            System.out.println("--------------------------------------------------------");
+            System.out.print("Ваш выбор № ");
+            String choice = scanner.nextLine();
+            switch (choice) {
+                case "1" -> {
+                    return Category.зарплата;
+                }
+                case "2" -> {
+                    return Category.еда;
+                }
+                case "3" -> {
+                    return Category.транспорт;
+                }
+                case "4" -> {
+                    return Category.развлечения;
+                }
+                case "5" -> {
+                    return Category.здоровье;
+                }
+                case "6" -> {
+                    return Category.другое;
+                }
+                case "7" -> {
+                    return null;
+                }
+                default -> {
+                    System.out.println("--------------------------------------------------------");
+                    System.out.println("Выберете пункт из списка!");
+                    System.out.println("--------------------------------------------------------");
+                }
+            }
+        }
+    }
+
+    public static void checkEmpty(ArrayList<Transaction> transactions) {
+        if (transactions.isEmpty()) {
+            System.out.println("-------------------------------------------------------------------------------");
+            System.out.println("Список операций пуст!");
+            System.out.println("-------------------------------------------------------------------------------");
+            return;
+        }
     }
 }
