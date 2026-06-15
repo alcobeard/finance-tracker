@@ -1,29 +1,26 @@
 package finance.tracker;
 
 import finance.tracker.dto.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class FinanceService { // это класс
-    private static double balanceCommon = 0;
-    private static List<Transaction> transactions = new ArrayList<>();
-    private static Scanner scanner = new Scanner(System.in);
+    private static final List<Transaction> transactions = new ArrayList<>();
+    private static final Scanner scanner = new Scanner(System.in);
     private static int nextId = 1; // транзакция получает свой id
 
     public static void main(String[] args) {
          //позволяет хранить объекты в Transaction
         boolean running = true;
         while (running) {
-            System.out.println("Текущий баланс: " + balanceCommon); // баланс показывается сразу и считается по транзакциям
+            System.out.println("Текущий баланс: " + calculateBalance(transactions)); // баланс показывается сразу и считается по транзакциям
             showMenu(); // показывает меню при запуске (смотри скобки, чтобы метод работал надо чтобы класс не закрылся)
-            String command = scanner.nextLine();
+            String command = scanner.nextLine().trim();
             switch (command) {
                 case "1": {
-                    addTrancastion();
+                    addTransaction();
                     break;
                 }
                 case "2": {
@@ -31,12 +28,7 @@ public class FinanceService { // это класс
                         System.out.println("Пусто");
                     } else {
                         for (Transaction transaction : transactions) {
-                            System.out.println("id: " + transaction.getId());
-                            System.out.println("Тип: " + transaction.getType());
-                            System.out.println("Категория: " + transaction.getCategory()); // достает данные чещез get
-                            System.out.println("Сумма: " + transaction.getAmount());
-                            System.out.println("Дата: " + transaction.getDate());
-                            System.out.println("-----");
+                            printTransaction(transaction);
                         }
                     }
                     break;
@@ -54,6 +46,21 @@ public class FinanceService { // это класс
                     System.out.println("Выход из программы");
                     break;
                 }
+                case "6": {
+                    TransactionSearchService searchService = new TransactionSearchService(transactions, scanner);
+                    searchService.showSearchMenu();
+                    break;
+                }
+                case "7": {
+                    TransactionSortService sortService = new TransactionSortService(transactions, scanner);
+                    sortService.showSortMenu();
+                    break;
+                }
+                case "8": {
+                    TransactionAnalyticsService analyticsService = new TransactionAnalyticsService(transactions, scanner);
+                    analyticsService.showAnalyticsMenu();
+                    break;
+                }
                 default: {
                     System.out.println("Неизвестная команда");
                     break;
@@ -68,11 +75,8 @@ public class FinanceService { // это класс
         boolean found = false;
         for (int i = 0; i < transactions.size(); i++) {
             Transaction transaction = transactions.get(i);
-
             if (transaction.getId() == id) {
                 transactions.remove(i);
-                // ВОТ ТУТ БЛЯТЬ ТОЖЕ ОБНОВИТЬ БАЛАНС И ПРОВЕРИТЬ КАКАЯ СУКА ОПЕРАЦИЯ БЫЛА
-                // И ИСХОДЯ ИЗ ЭТОГО УВЕЛИЧИТЬ БАЛАНС ИЛИ УМЕНЬШИТЬ
                 found = true;
                 System.out.println("Транзакция удалена");
                 break;
@@ -83,7 +87,7 @@ public class FinanceService { // это класс
         }
     }
 
-    private static void addTrancastion() {
+    private static void addTransaction() {
         System.out.println("Выберите тип операции");
         System.out.println("1. Доход");
         System.out.println("2. Расход");
@@ -95,32 +99,36 @@ public class FinanceService { // это класс
                 System.out.println("Введите сумму");
                 double amount = Double.parseDouble(scanner.nextLine());
                 Category category = readCategory(scanner);
+                System.out.println("Введите описание");
+                String description = scanner.nextLine();
                 Transaction transaction = new Transaction( //транзакция как объект
                         nextId,
                         amount,
                         LocalDateTime.now(),
                         TransactionType.INCOME, //enum для типа операции
-                        category
+                        category,
+                        description
                 );
+
                 transactions.add(transaction);
                 nextId++; //увеличивает id следующей транзакции
                 System.out.println("Доход сохранён");
-                // ВОТ ЗДЕСЬ ОБНОВИ БАЛАНС! НЕ ЗАБУДЬ ПРО ЗНАКИ +/-
                 break;
             }
             case "2": {
                 System.out.println("Расход");
                 System.out.println("Введите сумму");
                 double amount = Double.parseDouble(scanner.nextLine());
-
                 Category category = readCategory(scanner);
-
+                System.out.println("Введите описание");
+                String description = scanner.nextLine();
                 Transaction transaction = new Transaction(
                         nextId,
                         amount,
                         LocalDateTime.now(),
                         TransactionType.EXPENSE, //enum для типа операции
-                        category
+                        category,
+                        description
                 );
                 transactions.add(transaction);
                 nextId++;
@@ -138,25 +146,32 @@ public class FinanceService { // это класс
         }
     }
 
-    public static double calculateBalance(List<Transaction> transactions) { // метод баланса, тут он считается
-            double balance = 0;
-            for (Transaction transaction : transactions) {
-                if (transaction.getType() == TransactionType.INCOME) {
-                    balance = balance + transaction.getAmount();
-                }
-                if (transaction.getType() == TransactionType.EXPENSE) {
-                    balance = balance - transaction.getAmount();
-                }
-            }
-            return balance;
+    public static double calculateBalance(List<Transaction> transactions) {
+        double balance = 0;
+        for (Transaction transaction : transactions) {
+            balance = balance + transaction.getSignedAmount();
         }
+        return balance;
+    }
         public static void showMenu() {
             System.out.println("Welcome to Finance Tracker");
-            System.out.println("1. Добавить транзацию");
+            System.out.println("1. Добавить транзакцию");
             System.out.println("2. Список транзакций");
             System.out.println("3. Показать баланс");
             System.out.println("4. Удалить транзакцию");
             System.out.println("5. Выход");
+            System.out.println("6. Поиск");
+            System.out.println("7. Сортировка");
+            System.out.println("8. Аналитика");
+        }
+    public static void printTransaction(Transaction transaction) {
+        System.out.println("id: " + transaction.getId());
+        System.out.println("Тип: " + transaction.getType());
+        System.out.println("Категория: " + transaction.getCategory());
+        System.out.println("Сумма: " + transaction.getAmount());
+        System.out.println("Дата: " + transaction.getDate());
+        System.out.println("Описание: " + transaction.getDescription());
+        System.out.println("-----");
         }
         public static Category readCategory(Scanner scanner) {  // метод для категорий
             System.out.println("Выберите категорию");
@@ -180,4 +195,4 @@ public class FinanceService { // это класс
                 }
             };
         }
-    }
+}
