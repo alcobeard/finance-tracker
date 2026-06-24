@@ -17,7 +17,13 @@ public class SumArray {
      * @param numbers - массив чисел
      * @return int интовое значение суммы элементов
      */
-    public static int sumArray(int[] numbers) {}
+    public static int sumArray(int[] numbers) {
+        int sum = 0;
+        for (int number : numbers) {
+            sum = sum +number;
+        }
+        return sum;
+    }
 
     public static void main(String[] args) {
         System.out.println(sumArray(new int[]{1, 2, 3}) == 6);

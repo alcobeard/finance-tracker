@@ -12,7 +12,16 @@ public class EvenNumbers {
      * @return int evenCount - количество четных чисел
      */
 
-    public static int countEvenNumbers(int[] numbers) {}
+    public static int countEvenNumbers(int[] numbers) {
+        int evenCount = 0;
+        for (int number : numbers) {
+            if (number % 2 == 0) {
+                evenCount = evenCount +1;
+            }
+        }
+        return evenCount;
+    }
+
 
     public static void main(String[] args) {
         System.out.println(countEvenNumbers(new int[]{1, 2, 3, 4}) == 2);

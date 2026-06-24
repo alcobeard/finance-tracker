@@ -16,7 +16,15 @@ public class MaxElementInArray {
      * @param numbers - массив элементов
      * @return int maxElement - максимальный элемент
      */
-    public static int findMax(int[] numbers) {}
+    public static int findMax(int[] numbers) {
+        int max = numbers[0];
+        for (int number : numbers) {
+            if (number > max) {
+                max = number;
+            }
+        }
+        return max;
+    }
 
     public static void main(String[] args) {
         System.out.println(findMax(new int[]{1, 5, 3}) == 5);

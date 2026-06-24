@@ -19,7 +19,13 @@ public class ReverseArray {
      * @return массив чисел в обратном порядке
      */
     public static int[] reverseArray(int[] numbers) {
-
+        int [] reverseNumbers = new int [numbers.length];
+        int length = numbers.length;
+        for (int number : numbers) {
+           reverseNumbers [length-1] = number;
+           length --;
+        }
+        return reverseNumbers;
     }
 
     public static void main(String[] args) {
