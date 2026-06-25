@@ -21,7 +21,14 @@ public class IndexOfElement {
      * findIndex(List.of("java", "go"), "kotlin") -> -1
      */
     public static int findIndex(List<String> items, String target) {
-
+        int index = -1;
+        for (String item : items) {
+            if (item.equals(target)) {
+                index = items.indexOf(item);
+                break;
+            }
+        }
+        return index;
     }
 
     public static void main(String[] args) {

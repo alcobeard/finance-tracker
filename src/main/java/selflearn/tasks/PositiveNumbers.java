@@ -1,5 +1,6 @@
 package selflearn.tasks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +18,15 @@ public class PositiveNumbers {
      * getPositiveNumbers(List.of(-1, 2, 0, 5)) -> [2, 5]
      * getPositiveNumbers(List.of(-3, -2, -1)) -> []
      */
-    public static List<Integer> getPositiveNumbers(List<Integer> numbers) {}
+    public static List<Integer> getPositiveNumbers(List<Integer> numbers) {
+        List <Integer> positiveNum = new ArrayList<>();
+        for (int num : numbers) {
+            if (num > 0) {
+                positiveNum.add(num);
+            }
+        }
+        return positiveNum;
+    }
 
     public static void main(String[] args) {
         System.out.println(getPositiveNumbers(List.of(-1, 2, 0, 5)).equals(List.of(2, 5)));
