@@ -119,4 +119,13 @@ public class BudgetApp {
  * BudgetApp — точка входа
  *
  *
+ * v2:
+ * BudgetApp - оставляем
+ * MenuService - перерабатываем
+ * Budget - новый класс прослойка с транзакциями и балансом.
+ * SortAndFindService - объединить Display и Statistics
+ * Transactions - убрать чтение из статических полей BudgetApp. все читаем из нового класса Budget
+ *
+ * Основная цель - переработать структуру вложенностей, чтобы не было обратных зависимостей
  */
+
