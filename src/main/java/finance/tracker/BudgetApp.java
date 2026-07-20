@@ -1,8 +1,8 @@
 package finance.tracker;
 import finance.tracker.Util.Utils;
 import finance.tracker.dto.Transaction;
+import finance.tracker.model.Budget;
 import finance.tracker.service.*;
-import jdk.jshell.execution.Util;
 
 import java.util.*;
 
@@ -13,34 +13,32 @@ import java.util.*;
  */
 
 public class BudgetApp {
-    public static int prices = 0;
 
     public static void main(String[] args) {
-        TransactionService ts = new TransactionService();
-        DisplayService ds = new DisplayService();
-        StatisticsService ss = new StatisticsService();
-        FileService fs = new FileService();
-        MenuService ms = new MenuService();
-        Utils util = new Utils();
-        ArrayList<Transaction> transactions = new ArrayList<>();
-        transactions = fs.loadTransactions ();
+        Budget budget = new Budget();
         Scanner scanner = new Scanner(System.in);
+        TransactionService ts = new TransactionService();
+        SortAndFindService saf = new SortAndFindService();
+        FileService fs = new FileService();
+        MenuService ms = new MenuService(scanner, ts, saf);
+        Utils util = new Utils();
+        budget.setTransactions(fs.loadTransactions());
         boolean running = true; // <-- это флаг
         while (running) {
             ms.showMenu();
             try {
                 int choice = Integer.parseInt(scanner.nextLine());
                 switch (choice) {
-                    case 1 -> ts.transactionAdd(scanner, transactions, ms);
-                    case 2 -> ms.transactionList(scanner, transactions, ts, ds, ss);
-                    case 3 -> ss.showBalance(transactions);
-                    case 4 -> ts.removeTransaction(scanner, transactions);
+                    case 1 -> ms.addTransactionFlow(scanner, budget);
+                    case 2 -> ms.transactionList(scanner, budget);
+                    case 3 -> saf.showBalance(budget);
+                    case 4 -> ts.removeTransaction(scanner, budget);
                     case 5 -> {
-                        fs.saveTransactionsToFile(transactions);
+                        fs.saveTransactionsToFile(budget.getTransactions());
                         exit();
                         return;
                     }
-                    case 9 -> transactions.addAll(util.trashGenerator(10, transactions));
+                    case 9 -> budget.getTransactions().addAll(util.trashGenerator(10, budget));
                     default -> {
                         System.out.println("------------------------------------------");
                         System.out.println("Выберете пункт меню!");

@@ -3,6 +3,7 @@ package finance.tracker.Util;
 import finance.tracker.dto.Category;
 import finance.tracker.dto.Transaction;
 import finance.tracker.dto.TransactionType;
+import finance.tracker.model.Budget;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -10,14 +11,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static finance.tracker.BudgetApp.prices;
 
 public class Utils {
-    public ArrayList<Transaction> trashGenerator(int count, ArrayList<Transaction> transactions) {
+    public ArrayList<Transaction> trashGenerator(int count, Budget budget) {
         ArrayList<Transaction> newList = new ArrayList<>();
         TransactionType[] types = TransactionType.values();
         Category[] categories = Category.values();
-        int startId = transactions.size();
+        int startId = budget.getTransactions().size();
         for (int i = 1; i <= count; i++) {
             String discription = new String("Тест");
             TransactionType randomType = types[ThreadLocalRandom.current().nextInt(types.length)];
@@ -27,9 +27,9 @@ public class Utils {
             Category randomCategory = categories[ThreadLocalRandom.current().nextInt(categories.length)];
             Transaction transaction = new Transaction(startId + i, randomType, randomAmount, randomDate, randomCategory, discription);
             if (randomType == TransactionType.доход) {
-                prices = prices + randomAmount;
+                budget.addToBalance(randomAmount);
             } else {
-                prices = prices - randomAmount;
+                budget.addToBalance(-randomAmount);
             }
             newList.add(transaction);
         }

@@ -1,14 +1,22 @@
 package finance.tracker.service;
 
 import finance.tracker.dto.Category;
-import finance.tracker.dto.Transaction;
+import finance.tracker.model.Budget;
 
-import java.sql.SQLOutput;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 
 public class MenuService {
+    private final Scanner scanner;
+    private final TransactionService ts;
+    private final SortAndFindService saf;
+    public MenuService(Scanner scanner, TransactionService ts, SortAndFindService saf) {
+        this.scanner = scanner;
+        this.ts = ts;
+        this.saf = saf;
+
+    }
+
     public void showMenu() {
         System.out.println("                                                        ");
         System.out.println("================ Трекер Вашего бюджета =================");
@@ -23,7 +31,7 @@ public class MenuService {
         System.out.print("Пункт меню № ");
     }
 
-    public void transactionList(Scanner scanner, ArrayList<Transaction> transactions, TransactionService ts, DisplayService ds, StatisticsService ss) {
+    public void transactionList(Scanner scanner, Budget budget) {
         while (true) {
             System.out.println("--------------------------------------------------------");
             System.out.println("Сделайте выбор:");
@@ -36,9 +44,9 @@ public class MenuService {
             System.out.print("Ваш выбор № ");
             String choice = scanner.nextLine();
             switch (choice) {
-                case "1" -> showList(scanner, transactions, ts, ds, ss);
-                case "2" -> searchTransactions(scanner, transactions, ts, ds, ss);
-                case "3" -> sortAndAnalysis(scanner, transactions, ts, ds, ss);
+                case "1" -> showList(scanner, budget);
+                case "2" -> searchTransactions(scanner, budget);
+                case "3" -> sortAndAnalysis(scanner, budget);
                 case "4" -> {
                     return;
                 }
@@ -51,16 +59,16 @@ public class MenuService {
         }
     }
 
-    public void filterByCategory(Scanner scanner, ArrayList<Transaction> transactions, DisplayService ds) {
+    public void filterByCategory(Scanner scanner, Budget budget) {
         printCategoriesMenu();
         String choice = scanner.nextLine();
         switch (choice) {
-            case "1" -> ds.showByCategory(transactions, Category.зарплата);
-            case "2" -> ds.showByCategory(transactions, Category.еда);
-            case "3" -> ds.showByCategory(transactions, Category.транспорт);
-            case "4" -> ds.showByCategory(transactions, Category.развлечения);
-            case "5" -> ds.showByCategory(transactions, Category.здоровье);
-            case "6" -> ds.showByCategory(transactions, Category.другое);
+            case "1" -> saf.showByCategory(budget, Category.зарплата);
+            case "2" -> saf.showByCategory(budget, Category.еда);
+            case "3" -> saf.showByCategory(budget, Category.транспорт);
+            case "4" -> saf.showByCategory(budget, Category.развлечения);
+            case "5" -> saf.showByCategory(budget, Category.здоровье);
+            case "6" -> saf.showByCategory(budget, Category.другое);
             case "7" -> {
                 return;
             }
@@ -118,7 +126,7 @@ public class MenuService {
         }
     }
 
-    public void printCategoriesMenu() {
+    public static void printCategoriesMenu() {
         System.out.println("--------------------------------------------------------");
         System.out.println("Выберете категорию:");
         System.out.println("--------------------------------------------------------");
@@ -133,7 +141,7 @@ public class MenuService {
         System.out.print("Ваш выбор № ");
     }
 
-    public void showList(Scanner scanner, ArrayList<Transaction> transactions, TransactionService ts, DisplayService ds, StatisticsService ss) {
+    public void showList(Scanner scanner, Budget budget) {
         while (true) {
             System.out.println("--------------------------------------------------------");
             System.out.println("Сделайте выбор:");
@@ -146,9 +154,9 @@ public class MenuService {
             System.out.print("Ваш выбор № ");
             String choice = scanner.nextLine();
             switch (choice) {
-                case "1" -> ds.showAllTransactions(transactions);
-                case "2" -> ds.showIncome(transactions);
-                case "3" -> ds.showExpense(transactions);
+                case "1" -> saf.showAllTransactions(budget);
+                case "2" -> saf.showIncome(budget);
+                case "3" -> saf.showExpense(budget);
                 case "4" -> {
                     return;
                 }
@@ -161,7 +169,7 @@ public class MenuService {
         }
     }
 
-    public void searchTransactions(Scanner scanner, ArrayList<Transaction> transactions, TransactionService ts, DisplayService ds, StatisticsService ss) {
+    public void searchTransactions(Scanner scanner, Budget budget) {
         while (true) {
             System.out.println("--------------------------------------------------------");
             System.out.println("Сделайте выбор:");
@@ -175,11 +183,11 @@ public class MenuService {
             System.out.print("Ваш выбор № ");
             String choice = scanner.nextLine();
             switch (choice) {
-                case "1" -> filterByCategory(scanner, transactions, ds);
-                case "2" -> ds.showTransactionsByDate(scanner, transactions);
-                case "3" -> ds.showTransactionsByDateRange(scanner, transactions);
-                case "4" -> ds.showTransactionsByDescription(scanner, transactions);
-                case "5" -> transactionList(scanner, transactions, ts, ds, ss);
+                case "1" -> filterByCategory(scanner, budget);
+                case "2" -> saf.showTransactionsByDate(scanner, budget);
+                case "3" -> saf.showTransactionsByDateRange(scanner, budget);
+                case "4" -> saf.showTransactionsByDescription(scanner, budget);
+                case "5" -> transactionList(scanner, budget);
                 default -> {
                     System.out.println("--------------------------------------------------------");
                     System.out.println("Выберете пункт из списка!");
@@ -189,7 +197,7 @@ public class MenuService {
         }
     }
 
-    public void sortAndAnalysis(Scanner scanner, ArrayList<Transaction> transactions, TransactionService ts, DisplayService ds, StatisticsService ss) {
+    public void sortAndAnalysis(Scanner scanner, Budget budget) {
         while (true) {
             System.out.println("--------------------------------------------------------");
             System.out.println("Сделайте выбор:");
@@ -206,14 +214,20 @@ public class MenuService {
             System.out.print("Ваш выбор № ");
             String choice = scanner.nextLine();
             switch (choice) {
-                case "1" -> ts.sortTransactionsByDate(scanner, transactions, ds, this);
-                case "2" -> ts.sortTransactionsByAmount(scanner, transactions, ds, this);
-                case "3" -> ss.showExpensesByCategory(scanner, transactions, this);
-                case "4" -> ss.showMaxExpense(transactions);
-                case "5" -> ss.showExpensesByMonth(scanner, transactions);
-                case "6" -> ss.showAvgExpenses(transactions);
-                case "7" -> ss.showUniqueCategories(transactions);
-                case "8" -> transactionList(scanner, transactions, ts, ds, ss);
+                case "1" -> {
+                    ts.sortTransactionsByDate(scanner, budget);
+                    saf.printTransactionsTable(budget);
+                }
+                case "2" -> {
+                    ts.sortTransactionsByAmount(scanner, budget);
+                    saf.printTransactionsTable(budget);
+                }
+                case "3" -> saf.showExpensesByCategory(scanner, budget);
+                case "4" -> saf.showMaxExpense(budget);
+                case "5" -> saf.showExpensesByMonth(scanner, budget);
+                case "6" -> saf.showAvgExpenses(budget);
+                case "7" -> saf.showUniqueCategories(budget);
+                case "8" -> transactionList(scanner, budget);
                 default -> {
                     System.out.println("--------------------------------------------------------");
                     System.out.println("Выберете пункт из списка!");
@@ -221,5 +235,13 @@ public class MenuService {
                 }
             }
         }
+    }
+
+    public void addTransactionFlow(Scanner scanner, Budget budget) {
+        Category category = choiceCategory(scanner);
+        if (category == null) {
+            return; // пользователь вернулся в меню
+        }
+        ts.transactionAdd(scanner, budget, category);
     }
 }

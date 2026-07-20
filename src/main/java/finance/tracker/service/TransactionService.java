@@ -3,6 +3,7 @@ package finance.tracker.service;
 import finance.tracker.dto.Category;
 import finance.tracker.dto.Transaction;
 import finance.tracker.dto.TransactionType;
+import finance.tracker.model.Budget;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import static finance.tracker.BudgetApp.*;
 import static finance.tracker.Util.Utils.inputDate;
 
 public class TransactionService {
-    public void transactionAdd(Scanner scanner, ArrayList<Transaction> transactions, MenuService ms) {
+    public void transactionAdd(Scanner scanner, Budget budget, Category category) {
         while (true) {
             try {
                 System.out.println("--------------------------------------------------------");
@@ -47,10 +48,6 @@ public class TransactionService {
                         }
                         break;
                     }
-                    Category category = ms.choiceCategory(scanner);
-                    if (category == null) {
-                        return;
-                    }
                     /**
                      Здесь используется метод inputDate, его задача принимать дату и форматировать её в iso формат
                      Основная причина дедубликация.
@@ -60,17 +57,17 @@ public class TransactionService {
                      **/
                     LocalDate date = inputDate(scanner);
                     if (type == TransactionType.доход) {
-                        prices = prices + amount;
+                        budget.addToBalance(amount);
                     } else {
-                        prices = prices - amount;
+                        budget.addToBalance(-amount);
                     }
-                    int Id = transactions.size() + 1;
+                    int Id = budget.getTransactions().size() + 1;
                     System.out.println("-------------------------------------------------------------------------------");
                     System.out.println("Введите описание для транзакции (поле может быть пустым):");
                     System.out.print("Ввод: ");
                     String discription = scanner.nextLine();
                     Transaction newTransaction = new Transaction(Id, type, amount, date, category, discription);
-                    transactions.add(newTransaction);
+                    budget.getTransactions().add(newTransaction);
                     System.out.println("-------------------------------------------------------------------------------");
                     System.out.println("              Транзакция успешно добавлена!             ");
                     System.out.println("-------------------------------------------------------------------------------");
@@ -92,24 +89,24 @@ public class TransactionService {
             }
         }
     }
-    public void removeTransaction(Scanner scanner, ArrayList<Transaction> transactions) {
+    public void removeTransaction(Scanner scanner, Budget budget) {
         System.out.println("-------------------------------------------------------------------------------");
         System.out.print("Введите ID операции: ");
         String input = scanner.nextLine();
         boolean found = false;
-        for (int i = 0; i < transactions.size(); i++) {                   //долго ломал голову, не знал, что if без else работает
-            if (String.valueOf(transactions.get(i).getId()).equals(input) && transactions.get(i).getType() == TransactionType.доход) {
-                prices = prices - transactions.get(i).getAmount();
-                transactions.remove(i);
+        for (int i = 0; i < budget.getTransactions().size(); i++) {                   //долго ломал голову, не знал, что if без else работает
+            if (String.valueOf(budget.getTransactions().get(i).getId()).equals(input) && budget.getTransactions().get(i).getType() == TransactionType.доход) {
+                budget.addToBalance(-budget.getTransactions().get(i).getAmount());
+                budget.getTransactions().remove(i);
                 found = true;
                 System.out.println("-------------------------------------------------------------------------------");
                 System.out.println("Операция с ID: " + input + " удалена!");
                 System.out.println("-------------------------------------------------------------------------------");
                 break;
             }
-            if (String.valueOf(transactions.get(i).getId()).equals(input) && transactions.get(i).getType() == TransactionType.расход) {
-                prices = prices + transactions.get(i).getAmount();
-                transactions.remove(i);
+            if (String.valueOf(budget.getTransactions().get(i).getId()).equals(input) && budget.getTransactions().get(i).getType() == TransactionType.расход) {
+                budget.addToBalance(budget.getTransactions().get(i).getAmount());
+                budget.getTransactions().remove(i);
                 found = true;
                 System.out.println("-------------------------------------------------------------------------------");
                 System.out.println("Операция с ID: " + input + " удалена!");
@@ -123,17 +120,16 @@ public class TransactionService {
             System.out.println("-------------------------------------------------------------------------------");
         }
     }
-    public void sortTransactionsByDate (Scanner scanner, ArrayList<Transaction> transactions, DisplayService ds, MenuService ms) {
-        checkEmpty(transactions);
+    public void sortTransactionsByDate (Scanner scanner, Budget budget) {
+        checkEmpty(budget.getTransactions());
         System.out.println("1. Отсортировать по возрастанию");
         System.out.println("2. Отсортировать по убыванию");
         System.out.println("3. Вернуться в главное меню");
         String choice = scanner.nextLine();
         switch (choice) {
-            case "1" -> transactions.sort(Comparator.comparing(Transaction::getDate));
-            case "2" -> transactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+            case "1" -> budget.getTransactions().sort(Comparator.comparing(Transaction::getDate));
+            case "2" -> budget.getTransactions().sort(Comparator.comparing(Transaction::getDate).reversed());
             case "3" -> {
-                ms.showMenu();
                 return;
             }
             default -> {
@@ -142,19 +138,17 @@ public class TransactionService {
                 System.out.println("------------------------------------------");
             }
         }
-        ds.printTransactionsTable(transactions);
     }
-    public void sortTransactionsByAmount (Scanner scanner, ArrayList<Transaction> transactions, DisplayService ds, MenuService ms) {
-        checkEmpty(transactions);
+    public void sortTransactionsByAmount (Scanner scanner, Budget budget) {
+        checkEmpty(budget.getTransactions());
         System.out.println("1. Отсортировать по возрастанию");
         System.out.println("2. Отсортировать по убыванию");
         System.out.println("3. Вернуться в главное меню");
         String choice = scanner.nextLine();
         switch (choice) {
-            case "1" -> transactions.sort(Comparator.comparing(Transaction::getAmount));
-            case "2" -> transactions.sort(Comparator.comparing(Transaction::getAmount).reversed());
+            case "1" -> budget.getTransactions().sort(Comparator.comparing(Transaction::getAmount));
+            case "2" -> budget.getTransactions().sort(Comparator.comparing(Transaction::getAmount).reversed());
             case "3" -> {
-                ms.showMenu();
                 return;
             }
             default -> {
@@ -163,6 +157,5 @@ public class TransactionService {
                 System.out.println("------------------------------------------");
             }
         }
-        ds.printTransactionsTable(transactions);
     }
 }
